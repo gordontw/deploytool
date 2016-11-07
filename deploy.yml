@@ -1,0 +1,15 @@
+# deploy server
+
+beta:
+  Nodes:         [192.168.0.1, 192.168.0.2, 192.168.0.3]
+  Repository:    git@github.com:gordontw/test.git
+  Srcpath:       /tmp/deploy
+  Dstpath:       /home
+  Deployflow:    [local.run1,local.clone,remote.test]
+
+# run task
+TASKS:
+  local.clone:       git clone 
+  local.run1:        date; ls -la
+  local.run2:        phpunit tests/
+  remote.test:       phpunit
