@@ -24,6 +24,7 @@ var (
 
 // deploy value
 var (
+	yamlhost      = true
 	deployHost    []string
 	deploySetting map[string]string
 	deployTask    map[string]string
@@ -69,8 +70,7 @@ func init() {
 func main() {
 	flag.Parse()
 
-	if host == "" {
-		//colorMsg("ERROR: host group", color.FgHiRed)
+	if (host == "") || (action != "deploy" && command == "") {
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
@@ -103,6 +103,7 @@ func main() {
 		for i := 0; i < len(hmap); i++ {
 			processHost(hmap[i])
 		}
+		yamlhost = false
 	}
 
 	if debugMode {
