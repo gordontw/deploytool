@@ -15,7 +15,8 @@ import (
 var (
 	conf          map[string]string
 	host          string
-	task          string
+	action        string
+	command       string
 	inputYAML     string
 	debugMode     bool
 	defaultConfig = "deploy.yml"
@@ -28,7 +29,7 @@ var (
 	deployTask    map[string]string
 )
 
-// error msg
+// print colorize msg
 func colorMsg(msg string, c color.Attribute) {
 	color.Set(c)
 	fmt.Println(msg)
@@ -58,8 +59,9 @@ func processHost(inhost string) {
 }
 
 func init() {
-	flag.StringVar(&host, "h", "", "Host Group")
-	flag.StringVar(&task, "t", "", "run task")
+	flag.StringVar(&host, "h", "", "[Require!]Yaml Host Group or input host ex. m10[1-3].11.2.3,127.0.0.1")
+	flag.StringVar(&action, "a", "deploy", "action [deploy|task|cmd]")
+	flag.StringVar(&command, "i", "", "run item")
 	flag.BoolVar(&debugMode, "d", false, "Debug mode")
 	flag.StringVar(&inputYAML, "f", defaultConfig, "YAML file/directory")
 }
@@ -68,7 +70,8 @@ func main() {
 	flag.Parse()
 
 	if host == "" {
-		colorMsg("ERROR: host group", color.FgHiRed)
+		//colorMsg("ERROR: host group", color.FgHiRed)
+		flag.PrintDefaults()
 		os.Exit(0)
 	}
 	conf = parseConfig.ParseYML(inputYAML)
@@ -86,7 +89,7 @@ func main() {
 			re = regexp.MustCompile("Nodes.*")
 			if re.FindStringIndex(element) == nil { // setting
 				deploySetting[element] = v
-			} else { // hosts
+			} else if element != "Nodes.size" { // hosts
 				deployHost = append(deployHost, v)
 			}
 		}
@@ -110,4 +113,5 @@ func main() {
 		printLoop("-----SETTING-----", deploySetting)
 		printLoop("-----TASKS-----", deployTask)
 	}
+	runAction()
 }
