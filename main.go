@@ -8,6 +8,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 // input
@@ -22,7 +23,7 @@ var (
 
 // deploy value
 var (
-	deployHost    map[string]string
+	deployHost    []string
 	deploySetting map[string]string
 	deployTask    map[string]string
 )
@@ -38,6 +39,21 @@ func printLoop(note string, loop map[string]string) {
 	colorMsg(note, color.FgHiGreen)
 	for k, v := range loop {
 		fmt.Printf("%s=>%s\n", k, v)
+	}
+}
+
+func processHost(inhost string) {
+	reg := regexp.MustCompile("\\[" + "([0-9]+)-([0-9]+)" + "\\]")
+	if reg.MatchString(inhost) {
+		hmap := reg.FindStringSubmatch(inhost)
+		start, _ := strconv.Atoi(hmap[1])
+		end, _ := strconv.Atoi(hmap[2])
+		for iter := start; iter <= end; iter++ {
+			ihost := strings.Replace(inhost, hmap[0], fmt.Sprintf("%d", iter), 1)
+			deployHost = append(deployHost, ihost)
+		}
+	} else {
+		deployHost = append(deployHost, inhost)
 	}
 }
 
@@ -58,7 +74,6 @@ func main() {
 	conf = parseConfig.ParseYML(inputYAML)
 
 	// if not make inital, will "panic: assignment to entry in nil map"
-	deployHost = make(map[string]string)
 	deploySetting = make(map[string]string)
 	deployTask = make(map[string]string)
 
@@ -68,11 +83,11 @@ func main() {
 		element := fmt.Sprintf("%s", re.FindStringSubmatch(k)[2])
 
 		if key == host {
-			reg := regexp.MustCompile("Nodes.*")
-			if reg.FindStringIndex(element) == nil { // setting
+			re = regexp.MustCompile("Nodes.*")
+			if re.FindStringIndex(element) == nil { // setting
 				deploySetting[element] = v
 			} else { // hosts
-				deployHost[element] = v
+				deployHost = append(deployHost, v)
 			}
 		}
 		if key == "TASKS" { // task
@@ -81,15 +96,16 @@ func main() {
 	}
 
 	if len(deployHost) == 0 {
-		deployHost["Nodes.size"] = fmt.Sprintf("%d", 1)
-		deployHost["Nodes.0"] = host
+		hmap := strings.Split(host, ",")
+		for i := 0; i < len(hmap); i++ {
+			processHost(hmap[i])
+		}
 	}
 
 	if debugMode {
 		colorMsg("-----HOST-----", color.FgHiGreen)
-		s, _ := strconv.Atoi(deployHost["Nodes.size"])
-		for i := 0; i < s; i++ {
-			fmt.Println(deployHost["Nodes."+strconv.Itoa(i)])
+		for i := 0; i < len(deployHost); i++ {
+			fmt.Printf("%s\n", deployHost[i])
 		}
 		printLoop("-----SETTING-----", deploySetting)
 		printLoop("-----TASKS-----", deployTask)

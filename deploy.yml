@@ -12,4 +12,5 @@ TASKS:
   local.clone:       git clone 
   local.run1:        date; ls -la
   local.run2:        phpunit tests/
+  remote.env:        export a=b
   remote.test:       phpunit
