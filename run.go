@@ -12,7 +12,8 @@ import (
 )
 
 var (
-	passwd string
+	localtask map[string]bool //local task run one time only
+	passwd    string
 )
 
 func runAction() {
@@ -21,6 +22,7 @@ func runAction() {
 		bytePassword, _ := terminal.ReadPassword(int(syscall.Stdin))
 		passwd = string(bytePassword)
 	}
+	localtask = make(map[string]bool)
 	for i := 0; i < len(deployHost); i++ {
 		colorMsg(fmt.Sprintf("\n[Deploy %s]", deployHost[i]), color.FgHiBlue)
 		doAction(deployHost[i])
@@ -58,6 +60,11 @@ func doTask(myhost string, mytask string) {
 	re := regexp.MustCompile("^([a-zA-Z]+).")
 	switch fmt.Sprintf("%s", re.FindStringSubmatch(mytask)[1]) {
 	case "local":
+		if localtask[mytask] == true {
+			colorMsg(fmt.Sprintf(">INFO: Ran Task( %s )", mytask), color.FgHiGreen)
+			return
+		}
+		localtask[mytask] = true
 		cmdline = fmt.Sprintf("%s", deployTask[mytask])
 	case "remote":
 		cmdline = fmt.Sprintf("sshpass -p '%s' ssh -o ConnectTimeout=3 %s '%s'", passwd, myhost, deployTask[mytask])

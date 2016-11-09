@@ -11,4 +11,7 @@
         run item
 ```
 
+- yaml configure
+(deploy.yml)
+
 ![demo](tty.gif)
