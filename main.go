@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // input
@@ -68,8 +69,9 @@ func init() {
 }
 
 func main() {
-	flag.Parse()
+	runtime := time.Now().Format("20060102150405")
 
+	flag.Parse()
 	if (host == "") || (action != "deploy" && command == "") {
 		flag.PrintDefaults()
 		os.Exit(0)
@@ -80,6 +82,7 @@ func main() {
 	deploySetting = make(map[string]string)
 	deployTask = make(map[string]string)
 
+	deploySetting["Runtime"] = runtime
 	for k, v := range conf {
 		re := regexp.MustCompile("^([a-zA-Z]+).(.*)")
 		key := fmt.Sprintf("%s", re.FindStringSubmatch(k)[1])
@@ -94,6 +97,11 @@ func main() {
 			}
 		}
 		if key == "TASKS" { // task
+			re = regexp.MustCompile("{{[a-zA-Z]+}}")
+			regmap := re.FindAllString(v, -1)
+			for i := 0; i < len(regmap); i++ {
+				v = strings.Replace(v, regmap[i], deploySetting[regmap[i][2:len(regmap[i])-2]], -1)
+			}
 			deployTask[element] = v
 		}
 	}
