@@ -19,7 +19,7 @@ func runAction() {
 		passwd = string(bytePassword)
 	}
 	for i := 0; i < len(deployHost); i++ {
-		colorMsg(fmt.Sprintf("Deploy %s", deployHost[i]), color.FgHiBlue)
+		colorMsg(fmt.Sprintf("\n[Deploy %s]", deployHost[i]), color.FgHiBlue)
 		doAction(deployHost[i])
 	}
 }

@@ -38,7 +38,7 @@ func colorMsg(msg string, c color.Attribute) {
 }
 
 func printLoop(note string, loop map[string]string) {
-	colorMsg(note, color.FgHiGreen)
+	colorMsg(note, color.FgHiRed)
 	for k, v := range loop {
 		fmt.Printf("%s=>%s\n", k, v)
 	}
@@ -107,7 +107,7 @@ func main() {
 	}
 
 	if debugMode {
-		colorMsg("-----HOST-----", color.FgHiGreen)
+		colorMsg("-----HOST-----", color.FgHiRed)
 		for i := 0; i < len(deployHost); i++ {
 			fmt.Printf("%s\n", deployHost[i])
 		}
