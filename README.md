@@ -10,3 +10,5 @@
   -i string
         run item
 ```
+
+![demo](tty.gif)
