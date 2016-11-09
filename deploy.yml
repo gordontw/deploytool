@@ -4,7 +4,7 @@ beta:
   Repository:    git@github.com:gordontw/test.git
   Srcpath:       /tmp/deploy
   Dstpath:       /home
-  Deployflow:    [local.clone,local.run1,remote.test]
+  Deployflow:    [local.clone,local.rsync,remote.test]
 
 # run task
 TASKS:

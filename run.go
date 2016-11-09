@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strconv"
+	"strings"
 	"syscall"
 )
 
@@ -58,14 +59,18 @@ func doTask(myhost string, mytask string) {
 	colorMsg(fmt.Sprintf(">RUN: task( %s )\n", mytask), color.FgHiGreen)
 	cmdline := ""
 	re := regexp.MustCompile("^([a-zA-Z]+).")
-	switch fmt.Sprintf("%s", re.FindStringSubmatch(mytask)[1]) {
+	node := fmt.Sprintf("%s", re.FindStringSubmatch(mytask)[1])
+	switch node {
 	case "local":
 		if localtask[mytask] == true {
 			colorMsg(fmt.Sprintf(">INFO: Ran Task( %s )\n", mytask), color.FgHiGreen)
 			return
 		}
-		localtask[mytask] = true
-		cmdline = fmt.Sprintf("%s", deployTask[mytask])
+		re = regexp.MustCompile("{!HOST!}")
+		if re.MatchString(deployTask[mytask]) == false {
+			localtask[mytask] = true
+		}
+		cmdline = strings.Replace(deployTask[mytask], "{!HOST!}", myhost, -1)
 	case "remote":
 		cmdline = fmt.Sprintf("sshpass -p '%s' ssh -o ConnectTimeout=3 %s '%s'", passwd, myhost, deployTask[mytask])
 	default:
@@ -73,7 +78,11 @@ func doTask(myhost string, mytask string) {
 		return
 	}
 	if debugMode {
-		colorMsg(fmt.Sprintf("-- %s --\n", deployTask[mytask]), color.FgYellow)
+		if node == "local" {
+			colorMsg(fmt.Sprintf("-- %s --\n", cmdline), color.FgYellow)
+		} else {
+			colorMsg(fmt.Sprintf("-- %s --\n", deployTask[mytask]), color.FgYellow)
+		}
 	}
 	run(myhost, cmdline)
 }
@@ -83,6 +92,7 @@ func run(myhost string, cmdline string) {
 		colorMsg("ERROR: empty command!\n", color.FgHiRed)
 		return
 	}
+
 	cmd := exec.Command("sh", "-c", cmdline)
 	var out bytes.Buffer
 	var stderr bytes.Buffer
