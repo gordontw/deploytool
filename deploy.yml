@@ -10,5 +10,6 @@ beta:
 TASKS:
   local.clone:   git clone --depth=1 --recursive -q {{Repository}} {{Srcpath}}
   local.run:     date; ls -la
+  local.rsync:   rsync -arvz {{Srcpath}} {!HOST!} {{Dstpath}}
   remote.env:    export a=b
   remote.test:   phpunit tests/

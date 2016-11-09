@@ -17,14 +17,14 @@ var (
 )
 
 func runAction() {
-	if yamlhost == false {
-		fmt.Print("Enter Password: ")
-		bytePassword, _ := terminal.ReadPassword(int(syscall.Stdin))
-		passwd = string(bytePassword)
-	}
+	//if yamlhost == false {
+	colorMsg("Password (enter no passwd): ", color.FgHiYellow)
+	bytePassword, _ := terminal.ReadPassword(int(syscall.Stdin))
+	passwd = string(bytePassword)
+	//}
 	localtask = make(map[string]bool)
 	for i := 0; i < len(deployHost); i++ {
-		colorMsg(fmt.Sprintf("\n[Deploy %s]", deployHost[i]), color.FgHiBlue)
+		colorMsg(fmt.Sprintf("\n[Deploy %s]\n", deployHost[i]), color.FgHiBlue)
 		doAction(deployHost[i])
 	}
 }
@@ -44,7 +44,7 @@ func doAction(myhost string) {
 }
 
 func doCommand(myhost string) {
-	colorMsg(fmt.Sprintf(">RUN: cmd( %s )", command), color.FgHiGreen)
+	colorMsg(fmt.Sprintf(">RUN: cmd( %s )\n", command), color.FgHiGreen)
 	cmdline := ""
 	if myhost == "localhost" || myhost == "127.0.0.1" {
 		cmdline = fmt.Sprintf("%s", command)
@@ -55,13 +55,13 @@ func doCommand(myhost string) {
 }
 
 func doTask(myhost string, mytask string) {
-	colorMsg(fmt.Sprintf(">RUN: task( %s )", mytask), color.FgHiGreen)
+	colorMsg(fmt.Sprintf(">RUN: task( %s )\n", mytask), color.FgHiGreen)
 	cmdline := ""
 	re := regexp.MustCompile("^([a-zA-Z]+).")
 	switch fmt.Sprintf("%s", re.FindStringSubmatch(mytask)[1]) {
 	case "local":
 		if localtask[mytask] == true {
-			colorMsg(fmt.Sprintf(">INFO: Ran Task( %s )", mytask), color.FgHiGreen)
+			colorMsg(fmt.Sprintf(">INFO: Ran Task( %s )\n", mytask), color.FgHiGreen)
 			return
 		}
 		localtask[mytask] = true
@@ -69,16 +69,20 @@ func doTask(myhost string, mytask string) {
 	case "remote":
 		cmdline = fmt.Sprintf("sshpass -p '%s' ssh -o ConnectTimeout=3 %s '%s'", passwd, myhost, deployTask[mytask])
 	default:
-		colorMsg(fmt.Sprintf(">ERROR: No Task( %s )", mytask), color.FgHiRed)
+		colorMsg(fmt.Sprintf(">ERROR: No Task( %s )\n", mytask), color.FgHiRed)
 		return
 	}
 	if debugMode {
-		colorMsg(fmt.Sprintf("-- %s --", deployTask[mytask]), color.FgYellow)
+		colorMsg(fmt.Sprintf("-- %s --\n", deployTask[mytask]), color.FgYellow)
 	}
 	run(myhost, cmdline)
 }
 
 func run(myhost string, cmdline string) {
+	if cmdline == "" {
+		colorMsg("Err: empty command!\n", color.FgHiRed)
+		return
+	}
 	cmd := exec.Command("sh", "-c", cmdline)
 	var out bytes.Buffer
 	var stderr bytes.Buffer
@@ -86,9 +90,9 @@ func run(myhost string, cmdline string) {
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	if err != nil {
-		colorMsg(fmt.Sprintf("Err: %s", stderr.String()), color.FgHiRed)
+		colorMsg(fmt.Sprintf("Err: %s\n", stderr.String()), color.FgHiRed)
 		return
 	}
-	colorMsg("Result:", color.FgHiGreen)
+	colorMsg("Result:\n", color.FgHiGreen)
 	fmt.Println(out.String())
 }

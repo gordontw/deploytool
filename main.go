@@ -34,7 +34,7 @@ var (
 // print colorize msg
 func colorMsg(msg string, c color.Attribute) {
 	color.Set(c)
-	fmt.Println(msg)
+	fmt.Print(msg)
 	color.Unset()
 }
 
@@ -97,13 +97,16 @@ func main() {
 			}
 		}
 		if key == "TASKS" { // task
-			re = regexp.MustCompile("{{[a-zA-Z]+}}")
-			regmap := re.FindAllString(v, -1)
-			for i := 0; i < len(regmap); i++ {
-				v = strings.Replace(v, regmap[i], deploySetting[regmap[i][2:len(regmap[i])-2]], -1)
-			}
 			deployTask[element] = v
 		}
+	}
+	for k, v := range deployTask {
+		re := regexp.MustCompile("{{[a-zA-Z]+}}")
+		regmap := re.FindAllString(v, -1)
+		for i := 0; i < len(regmap); i++ {
+			v = strings.Replace(v, regmap[i], deploySetting[regmap[i][2:len(regmap[i])-2]], -1)
+		}
+		deployTask[k] = v
 	}
 
 	if len(deployHost) == 0 {
@@ -115,12 +118,12 @@ func main() {
 	}
 
 	if debugMode {
-		colorMsg("-----HOST-----", color.FgHiRed)
+		colorMsg("-----HOST-----\n", color.FgHiRed)
 		for i := 0; i < len(deployHost); i++ {
 			fmt.Printf("%s\n", deployHost[i])
 		}
-		printLoop("-----SETTING-----", deploySetting)
-		printLoop("-----TASKS-----", deployTask)
+		printLoop("-----SETTING-----\n", deploySetting)
+		printLoop("-----TASKS-----\n", deployTask)
 	}
 	runAction()
 }
