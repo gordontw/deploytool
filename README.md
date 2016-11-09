@@ -12,6 +12,6 @@
 ```
 
 - yaml configure example
-[include](FILE:deploy.yml)
+![include](FILE:deploy.yml)
 
 ![demo](tty.gif)
