@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/fatih/color"
 	"golang.org/x/crypto/ssh/terminal"
@@ -48,9 +49,7 @@ func doCommand(myhost string) {
 	} else {
 		cmdline = fmt.Sprintf("sshpass -p '%s' ssh -o ConnectTimeout=3 %s '%s'", passwd, myhost, command)
 	}
-	out, _ := exec.Command("sh", "-c", cmdline).Output()
-	colorMsg(">OUTPUT:", color.FgHiGreen)
-	fmt.Printf("%s\n", out)
+	run(myhost, cmdline)
 }
 
 func doTask(myhost string, mytask string) {
@@ -69,10 +68,20 @@ func doTask(myhost string, mytask string) {
 	if debugMode {
 		colorMsg(fmt.Sprintf("-- %s --", deployTask[mytask]), color.FgYellow)
 	}
-	out, err := exec.Command("sh", "-c", cmdline).Output()
-	colorMsg(">OUTPUT:", color.FgHiGreen)
-	fmt.Printf("%s\n", out)
+	run(myhost, cmdline)
+}
+
+func run(myhost string, cmdline string) {
+	cmd := exec.Command("sh", "-c", cmdline)
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	err := cmd.Run()
 	if err != nil {
-		fmt.Println("ERR" + fmt.Sprint(err))
+		colorMsg(fmt.Sprintf("Err: %s", stderr.String()), color.FgHiRed)
+		return
 	}
+	colorMsg("Result:", color.FgHiGreen)
+	fmt.Println(out.String())
 }
