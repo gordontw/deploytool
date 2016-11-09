@@ -80,7 +80,7 @@ func doTask(myhost string, mytask string) {
 
 func run(myhost string, cmdline string) {
 	if cmdline == "" {
-		colorMsg("Err: empty command!\n", color.FgHiRed)
+		colorMsg("ERROR: empty command!\n", color.FgHiRed)
 		return
 	}
 	cmd := exec.Command("sh", "-c", cmdline)
@@ -90,7 +90,7 @@ func run(myhost string, cmdline string) {
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	if err != nil {
-		colorMsg(fmt.Sprintf("Err: %s\n", stderr.String()), color.FgHiRed)
+		colorMsg(fmt.Sprintf("ERROR: %s\n", stderr.String()), color.FgHiRed)
 		return
 	}
 	colorMsg("Result:\n", color.FgHiGreen)
