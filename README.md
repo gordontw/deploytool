@@ -11,7 +11,7 @@
         run item
 ```
 
-- yaml configure
-![include](deploy.yml)
+- yaml configure example
+[include](FILE:deploy.yml)
 
 ![demo](tty.gif)
