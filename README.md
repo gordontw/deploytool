@@ -12,6 +12,6 @@
 ```
 
 - yaml configure
-(deploy.yml)
+{1:20}(deploy.yml)
 
 ![demo](tty.gif)
