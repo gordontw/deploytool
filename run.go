@@ -66,13 +66,13 @@ func doTask(myhost string, mytask string) {
 			colorMsg(fmt.Sprintf(">INFO: Ran Task( %s )\n", mytask), color.FgHiGreen)
 			return
 		}
-		re = regexp.MustCompile("{!HOST!}")
+		re = regexp.MustCompile("{!REMOTE!}")
 		if re.MatchString(deployTask[mytask]) == false {
 			localtask[mytask] = true
 		}
-		cmdline = strings.Replace(deployTask[mytask], "{!HOST!}", myhost, -1)
+		cmdline = strings.Replace(deployTask[mytask], "{!REMOTE!}", myhost, -1)
 	case "remote":
-		cmdline = fmt.Sprintf("sshpass -p '%s' ssh -o ConnectTimeout=3 %s '%s'", passwd, myhost, deployTask[mytask])
+		cmdline = fmt.Sprintf("sshpass -p '%s' ssh -o ConnectTimeout=3 %s '%s'", passwd, myhost, cmdline)
 	default:
 		colorMsg(fmt.Sprintf(">ERROR: No Task( %s )\n", mytask), color.FgHiRed)
 		return

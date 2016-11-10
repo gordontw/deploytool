@@ -7,9 +7,14 @@ beta:
   Deployflow:    [local.clone,local.rsync,remote.test]
 
 # run task
+# start with local/remote
+#   - local  > run on localhost 
+#     - {!REMOTE!} would be replaced by remote node
+#   - remote > run on remote node
+# - {{xxx}} would be replaced by group setting. ex. beta.xxx
 TASKS:
   local.clone:   git clone --depth=1 --recursive -q {{Repository}} {{Srcpath}}
   local.run:     date; ls -la
-  local.rsync:   rsync -arvz {{Srcpath}} {!HOST!} {{Dstpath}}
+  local.rsync:   rsync -arvz {{Srcpath}} {!REMOTE!} {{Dstpath}}
   remote.env:    export a=b
   remote.test:   phpunit tests/
