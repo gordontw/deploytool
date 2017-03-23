@@ -1,10 +1,12 @@
 # deploy server
+# Nodes, Deployflow - these two elements must be fixed
+# Other elements could be dynamic variable
 beta:
   Nodes:         [192.168.0.1, 192.168.0.2]
+  Deployflow:    [local.clone,local.rsync,remote.test]
   Repository:    git@github.com:gordontw/test.git
   Srcpath:       /tmp/deploy
   Dstpath:       /home
-  Deployflow:    [local.clone,local.rsync,remote.test]
 
 # run task
 # start with local/remote

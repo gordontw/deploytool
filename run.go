@@ -25,7 +25,7 @@ func runAction() {
 	//}
 	localtask = make(map[string]bool)
 	for i := 0; i < len(deployHost); i++ {
-		colorMsg(fmt.Sprintf("\n[Deploy %s]\n", deployHost[i]), color.FgHiBlue)
+		colorMsg(fmt.Sprintf("\n[%s]\n", deployHost[i]), color.FgHiBlue)
 		doAction(deployHost[i])
 	}
 }
