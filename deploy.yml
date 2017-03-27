@@ -3,7 +3,7 @@
 # Other elements could be dynamic variable
 beta:
   Nodes:         [192.168.0.1, 192.168.0.2]
-  Deployflow:    [local.clone,local.rsync,remote.test]
+  Deployflow:    [local.clone, local.rsync, remote.test]
   Repository:    git@github.com:gordontw/test.git
   Srcpath:       /tmp/deploy
   Dstpath:       /home

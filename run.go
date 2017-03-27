@@ -19,7 +19,7 @@ var (
 
 func runAction() {
 	//if yamlhost == false {
-	colorMsg("Password (enter no passwd): ", color.FgHiYellow)
+	colorMsg("Password (enter if no passwd): ", color.FgHiYellow)
 	bytePassword, _ := terminal.ReadPassword(int(syscall.Stdin))
 	passwd = string(bytePassword)
 	//}
@@ -46,12 +46,16 @@ func doAction(myhost string) {
 
 func doCommand(myhost string) {
 	colorMsg(fmt.Sprintf(">RUN: cmd( %s )\n", command), color.FgHiGreen)
+	cmd := ""
 	cmdline := ""
 	if myhost == "localhost" || myhost == "127.0.0.1" {
-		cmdline = fmt.Sprintf("%s", command)
+		cmd = fmt.Sprintf("%s", command)
 	} else {
-		cmdline = fmt.Sprintf("sshpass -p '%s' ssh -o ConnectTimeout=3 %s '%s'", passwd, myhost, command)
+		cmd = fmt.Sprintf("sshpass -p '%s' ssh -o ConnectTimeout=3 %s '%s'", passwd, myhost, command)
 	}
+	sudocmd := ""
+	sudocmd = fmt.Sprintf("echo %s|sudo -kS", passwd)
+	cmdline = strings.Replace(cmd, "sudo", sudocmd, -1)
 	run(myhost, cmdline)
 }
 

@@ -72,9 +72,19 @@ func main() {
 	runtime := time.Now().Format("20060102150405")
 
 	flag.Parse()
-	if (host == "") || (action != "deploy" && command == "") {
+	if host == "" {
 		flag.PrintDefaults()
 		os.Exit(0)
+	}
+	if command == "" {
+		action = "deploy"
+	} else {
+		mytype := regexp.MustCompile("^([a-zA-Z]+).").FindStringSubmatch(command)[1]
+		if mytype == "local" || mytype == "remote" {
+			action = "task"
+		} else {
+			action = "cmd"
+		}
 	}
 	conf = parseConfig.ParseYML(inputYAML)
 
